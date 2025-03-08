@@ -1,0 +1,252 @@
+1. self.cursor.execute("""
+                SELECT table_name
+                FROM information_schema.tables
+                WHERE table_schema = 'public'
+                AND table_type = 'BASE TABLE';
+            """)
+
+2. primary_key_string = f''' 
+                WITH primary_key_data AS (
+                    SELECT 
+                        c.table_name, 
+                        c.column_name AS Column_Name,
+                        CASE 
+                            WHEN c.column_name = kcu.column_name THEN 'Primary Key' 
+                            ELSE '' 
+                        END AS "Primary Key"
+                    FROM information_schema.columns c
+                    LEFT JOIN (
+                        SELECT kcu.table_name, kcu.column_name
+                        FROM information_schema.table_constraints AS tc
+                        JOIN information_schema.key_column_usage AS kcu
+                            ON tc.constraint_name = kcu.constraint_name
+                        WHERE tc.constraint_type = 'PRIMARY KEY'
+                        AND tc.table_name = '{relation}'
+                    ) AS kcu
+                    ON c.column_name = kcu.column_name
+                ),
+            '''
+
+            nullable_string = f'''
+                nullable_data AS (
+                    SELECT
+                        table_name,
+                        column_name AS "Column_Name",
+                        CASE 
+                            WHEN is_nullable = 'YES' THEN 'YES'
+                            ELSE 'NO'
+                        END AS "Nullable"
+                    FROM information_schema.columns
+                ),
+            '''
+
+            table_type = f'''
+                type_data AS (
+                    SELECT
+                        table_name,
+                        column_name AS "Column_Name",
+                        data_type AS "Data Type",
+                        COALESCE(character_maximum_length, numeric_precision, 0) AS "Length"
+                    FROM information_schema.columns
+                ),
+            '''
+
+            foreign_key_string = f'''
+                foreign_key_data AS (
+                    SELECT
+                        c.table_name,
+                        c.column_name AS "Column_Name",
+                        CASE
+                            WHEN ccu.table_name IS NOT NULL AND ccu.column_name IS NOT NULL THEN
+                                CONCAT(ccu.table_name, '.', ccu.column_name)
+                            ELSE
+                                ''
+                        END AS "Foreign Key Reference"
+                    FROM information_schema.columns c
+                    LEFT JOIN information_schema.key_column_usage kcu
+                        ON c.table_name = kcu.table_name
+                        AND c.column_name = kcu.column_name
+                    LEFT JOIN information_schema.table_constraints tc
+                        ON tc.constraint_name = kcu.constraint_name
+                        AND tc.constraint_type = 'FOREIGN KEY'
+                    LEFT JOIN information_schema.constraint_column_usage ccu
+                        ON tc.constraint_name = ccu.constraint_name
+                )
+            '''
+
+            final_query = f"""
+                {primary_key_string}
+                {nullable_string}
+                {table_type}
+                {foreign_key_string}
+
+                SELECT 
+                    pk.Column_Name AS "Column Name", 
+                    pk."Primary Key", 
+                    n."Nullable", 
+                    fk."Foreign Key Reference", 
+                    t."Data Type", 
+                    t."Length"
+                FROM primary_key_data pk
+                JOIN nullable_data n ON pk.table_name = n.table_name AND pk.Column_Name = n."Column_Name"
+                JOIN foreign_key_data fk ON pk.table_name = fk.table_name AND pk.Column_Name = fk."Column_Name"
+                JOIN type_data t ON pk.table_name = t.table_name AND pk.Column_Name = t."Column_Name" 
+                WHERE pk.table_name = '{relation}'
+            """
+
+3. self.cursor.execute(f"""
+                WITH RECURSIVE Reachable AS (
+                    SELECT "from" AS Vertex
+                    FROM {rel}
+                    WHERE "from" = '{vertex}'
+                    
+                    UNION
+                    
+                    SELECT r."to"
+                    FROM {rel} r
+                    JOIN Reachable rc
+                    ON r."from" = rc.Vertex
+                )
+                SELECT DISTINCT Vertex FROM Reachable;
+            """)
+
+4. last_row_id = cur.fetchone()[0] -- Fetches last row Id
+
+5. The fetchall fetches all the (remaining) rows of a query result, returning them as a list of tuples.
+
+6. The mogrify is a psycopg2 extension to the Python DB API that returns a query string after arguments binding. 
+
+7. binary = psycopg2.Binary(data)
+    cur.execute("INSERT INTO images(data) VALUES (%s)", (binary,))
+
+8. con.autocommit = True
+
+9. const checkEmailQuery = 'SELECT * FROM Users WHERE email = $1;';
+    const existingUser = await pool.query(checkEmailQuery, [email]);
+
+10. const hashedPassword = await bcrypt.hash(password, 10);
+
+11. res.render('display-cart', { cart: cartResult.rows, totalPrice });
+
+12. const totalAmount = cartItems.rows.reduce((total, item) => total + (item.quantity * item.price), 0);
+
+13. const orderResult = await pool.query('INSERT INTO Orders (user_id, order_date, total_amount) VALUES ($1, $2, $3) RETURNING order_id', [userId, orderDate, totalAmount]);  const orderId = orderResult.rows[0].order_id;
+
+14. const orderResult = await pool.query('SELECT * FROM Orders WHERE user_id = $1 ORDER BY order_date DESC LIMIT 1', [userId]);
+
+15. <form action="/add-to-cart" method="POST">
+    <label for="product_id">Product ID:</label>
+    <input type="number" id="product_id" name="product_id" required><br><br>
+
+    <label for="quantity">Quantity:</label>
+    <input type="number" id="quantity" name="quantity" required><br><br>
+
+    <button type="submit">Add to Cart</button>
+  </form>
+
+16. <tbody>
+      <% cart.forEach(item => { %>
+        <tr>
+          <td><%= item.product_id %></td>
+          <td><%= item.name %></td>
+          <td><%= item.quantity %></td>
+          <td><%= item.price %></td>
+          <td><%= item.total_price %></td>
+          <% if (item.stock_quantity >= item.quantity) { %>
+            <td style="color: green; font-weight: bold;">In Stock</td>
+          <% } else { %>
+            <td style="color: red; font-weight: bold;">Insufficient Stock</td>
+          <% } %>
+        </tr>
+      <% }) %>
+    </tbody>
+
+17. Non-blocking in JavaScript:
+request(myUrl, (err, data) => {
+console.log(data);
+});
+
+18. <button
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          Home
+        </button>
+
+19. // React hook to navigate to pages in the react app
+  const navigate = useNavigate();
+
+20. const checkStatus = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/isLoggedIn`, {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          throw new Error("Not logged in");
+        }
+
+        const data = await response.json();
+        console.log(data.message);
+        setUsername(data.username);
+      } catch (err) {
+        console.log(err);
+        navigate("/login");
+      }
+    };
+
+21. const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+22. {orderDetails.orderItems.map((item) => (
+              <tr key={item.product_id}>
+                <td>{item.product_id}</td>
+                <td>{item.name}</td>
+                <td>{item.quantity}</td>
+                <td>${item.price}</td>
+                <td>${item.quantity * item.price}</td>
+              </tr>
+            ))}
+
+23. products.filter((product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+24. return res
+        .status(400)
+        .json({ message: "Error: Email is already registered." });
+
+25. A React function component will be called by React. This process is known as “rendering”
+
+26. A few attribute names differ from plain HTML. In particular, use className instead of class for HTML/CSS class values, and <label htmlFor="someInput">.
+
+27. To return multiple items, use <React.Fragment></React.Fragment> as a pseudo “parent” (which will not add any extra DOM nodes around the content) ()
+
+28. If the first letter is lowercase, the tag is assumed to be an HTML element, and turned into a string. If it’s uppercase, the tag is assumed to be a variable name in scope (usually a component).
+
+29. Props are values passed from parent to child.
+
+30. Event handler prop names are camelCased: onClick, onMouseMove
+
+31. Hooks allow React function components to have internal state and run additional logic after rendering
+The useState hook allows components to store and update a value internally. useState accepts an initial state value, and returns an array with 2 things inside: the current value, and a setter function
+Calling setState(newValue) will queue a re-render with the new value
+
+32. The useEffect hook allows components to run logic that has side effects
+By default, useEffect runs its callback after every render
+Effects run on brief timeout after render is complete
+
+33. Only call hooks at the top level of a function component
+Do not call hooks outside of React function components

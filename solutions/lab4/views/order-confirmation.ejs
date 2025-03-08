@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f9;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #4CAF50;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .total {
+      font-size: 1.2em;
+      font-weight: bold;
+      text-align: right;
+    }
+    .back-button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .back-button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Order Confirmation</h1>
+    
+    <p>Thank you for your order! Your order has been successfully placed.</p>
+    
+    <h3>Order Details</h3>
+    <p><strong>Order ID:</strong> <%= order.order_id %></p>
+    <p><strong>Order Date:</strong> <%= order.order_date %></p>
+    <p><strong>Total Amount:</strong> <%= order.total_amount %></p>
+
+    <h3>Items in Your Order:</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Product ID</th>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Price per Item</th>
+          <th>Total Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orderItems.forEach(item => { %>
+          <tr>
+            <td><%= item.product_id %></td>
+            <td><%= item.name %></td>
+            <td><%= item.quantity %></td>
+            <td><%= item.price %></td>
+            <td><%= item.quantity * item.price %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+  </div>
+</body>
+</html>

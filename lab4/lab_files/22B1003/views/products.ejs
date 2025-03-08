@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products List</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2; /* Shaded box for headers */
+        }
+    </style>
+</head>
+<body>
+    <center><h2>Products List</h2></center>
+    <table>
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (products.length > 0) { %>
+                <% products.forEach(product => { %>
+                    <tr>
+                        <td><%= product.product_id %></td>
+                        <td><%= product.name %></td>
+                        <td><%= product.price %></td>
+                    </tr>
+                <% }); %>
+            <% } else { %>
+                <tr>
+                    <td colspan="3">No products available.</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2; /* Shaded box for headers */
+        }
+    </style>
+</head>
+<body>
+    <h2>Order Confirmation</h2>
+    <p>Thank you for the order! Your order has been successfully placed.</p>
+    <h3>Order Details</h3>
+    <h4>Order ID: <%= order.order_id %></h4>
+    <h4>Order Date: <%= order.date %></h4>
+    <h4>Total Amount: <%= order.total_amount %></h4>
+    <h3>Items in Your Order: </h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Price per Item</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (orderItems.length > 0) { %>
+                <% orderItems.forEach(product => { %>
+                    <tr>
+                        <td><%= product.product_id %></td>
+                        <td><%= product.name %></td>
+                        <td><%= product.quantity %></td>
+                        <td><%= product.price %></td>
+                        <td><%= product.price * product.quantity %></td>
+                    </tr>
+                <% }); %>
+            <% } else { %>
+                <tr>
+                    <td colspan="3">No orderItems available.</td>
+                </tr>
+            <% } %>
+        </tbody>
+</body>
+</html>

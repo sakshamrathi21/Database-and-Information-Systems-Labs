@@ -1,0 +1,82 @@
+DROP TABLE IF EXISTS Customers CASCADE;
+DROP TABLE IF EXISTS Categories CASCADE;
+DROP TABLE IF EXISTS Suppliers CASCADE;
+DROP TABLE IF EXISTS Products CASCADE;
+DROP TABLE IF EXISTS Orders CASCADE;
+DROP TABLE IF EXISTS OrderItems CASCADE;
+DROP TABLE IF EXISTS Shipping CASCADE;
+DROP TABLE IF EXISTS Payments CASCADE;
+DROP TABLE IF EXISTS Reviews CASCADE;
+
+CREATE TABLE Customers (
+    customer_id INT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phone_number VARCHAR(10)
+);
+
+CREATE TABLE Categories (
+    category_id INT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE Suppliers (
+    supplier_id INT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
+    phone_number VARCHAR(15),
+    address TEXT
+);
+
+CREATE TABLE Products (
+    product_id INT PRIMARY KEY,
+    supplier_id INT REFERENCES Suppliers(supplier_id),
+    category_id INT REFERENCES Categories(category_id),
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    quantity INT NOT NULL
+);
+
+CREATE TABLE Orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT REFERENCES Customers(customer_id),
+    order_date DATE NOT NULL,
+    total_amount DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE OrderItems(
+    order_id INT REFERENCES Orders(order_id),
+    product_id INT REFERENCES Products(product_id),
+    quantity INT NOT NULL,
+    price DECIMAL(10, 2) NOT NULL, -- Unit price per item
+    PRIMARY KEY (order_id, product_id)
+);
+
+CREATE TABLE Payments (
+    payment_id INT PRIMARY KEY,
+    order_id INT REFERENCES Orders(order_id),
+    payment_date DATE,
+    payment_method VARCHAR(20) CHECK (payment_method IN ('UPI', 'Net Banking', 'Debit Card', 'Credit Card', 'Cash on Delivery'))
+);
+
+
+CREATE TABLE Shipping (
+    shipping_id INT PRIMARY KEY,
+    order_id INT REFERENCES Orders(order_id),
+    shipping_method VARCHAR(20) CHECK (shipping_method IN ('Standard', 'Express')),
+    shipping_address TEXT NOT NULL,
+    shipping_date DATE NOT NULL,
+    status VARCHAR(20) CHECK (status IN ('Ordered', 'Shipped', 'Dispatched', 'Received')), 
+    delivery_date DATE
+);
+
+CREATE TABLE Reviews (
+    review_id INT PRIMARY KEY,
+    product_id INT REFERENCES Products(product_id),
+    customer_id INT REFERENCES Customers(customer_id),
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    review_text TEXT,
+    review_date DATE NOT NULL
+);
+

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Display Cart</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid black;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Your Cart</h1>
+
+  <!-- Cart Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>Product ID</th>
+        <th>Product Name</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total Price</th>
+        <th>Stock Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% cart.forEach(item => { %>
+        <tr>
+          <td><%= item.product_id %></td>
+          <td><%= item.name %></td>
+          <td><%= item.quantity %></td>
+          <td><%= item.price %></td>
+          <td><%= item.total_price %></td>
+          <% if (item.stock_quantity >= item.quantity) { %>
+            <td style="color: green; font-weight: bold;">In Stock</td>
+          <% } else { %>
+            <td style="color: red; font-weight: bold;">Insufficient Stock</td>
+          <% } %>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <!-- Display Total Price -->
+  <h3>Total Price: <%= totalPrice %></h3>
+
+  <form action="/place-order" method="POST">
+      <button type="submit">Place Order</button>
+    </form>
+</body>
+</html>

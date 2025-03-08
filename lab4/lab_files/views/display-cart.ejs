@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2; /* Shaded box for headers */
+        }
+    </style>
+</head>
+<body>
+    <!-- we need to display the total price at the end -->
+
+    <h2>Your Cart</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total Price</th>
+                <th>Stock Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (cartItems.length > 0) { %>
+                <% cartItems.forEach(product => { %>
+                    <tr>
+                        <td><%= product.product_id %></td>
+                        <td><%= product.name %></td>
+                        <td><%= product.quantity %></td>
+                        <td><%= product.price %></td>
+                        <td><%= product.price * product.quantity %></td>
+                        <td><%= product.in_stock ? "In Stock" : "Insufficient Stock" %></td>
+                        
+                    </tr>
+                <% }); %>
+            <% } else { %>
+                <tr>
+                    <td colspan="3">No cartItems available.</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+    <h3>Total Price: <%= totalPrice %></h3>
+    <form action="/place-order" method="POST">
+        <button type="submit">Place Order</button>
+      </form>
+      
+</body>
+</html>
